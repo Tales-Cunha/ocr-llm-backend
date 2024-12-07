@@ -1,0 +1,43 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  password  String
+  documents Document[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Document {
+  id          String    @id @default(cuid())
+  filename    String
+  originalUrl String?
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  
+  extractedText String?
+  uploadedAt   DateTime @default(now())
+  
+  interactions DocumentInteraction[]
+}
+
+model DocumentInteraction {
+  id           String   @id @default(cuid())
+  documentId   String
+  document     Document @relation(fields: [documentId], references: [id])
+  
+  userQuery    String
+  llmResponse  String
+  createdAt    DateTime @default(now())
+}
