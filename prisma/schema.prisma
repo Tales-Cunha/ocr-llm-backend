@@ -8,36 +8,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  name      String?
-  password  String
-  documents Document[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id         String     @id @default(uuid())
+  name       String
+  email      String     @unique
+  password   String
+  documents  Document[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
 
 model Document {
-  id          String    @id @default(cuid())
-  filename    String
-  originalUrl String?
-  userId      String
-  user        User      @relation(fields: [userId], references: [id])
-  
-  extractedText String?
-  uploadedAt   DateTime @default(now())
-  
-  interactions DocumentInteraction[]
+  id              String           @id @default(uuid())
+  user            User             @relation(fields: [userId], references: [id])
+  userId          String
+  filename        String
+  originalUrl     String?
+  ocrText         String?
+  status          String           @default("PENDING")
+  llmInteractions LLMInteraction[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
-model DocumentInteraction {
-  id           String   @id @default(cuid())
-  documentId   String
-  document     Document @relation(fields: [documentId], references: [id])
-  
-  userQuery    String
-  llmResponse  String
-  createdAt    DateTime @default(now())
+model LLMInteraction {
+  id          String     @id @default(uuid())
+  document    Document   @relation(fields: [documentId], references: [id])
+  documentId  String
+  question    String
+  answer      String
+  createdAt   DateTime   @default(now())
 }
