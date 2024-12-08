@@ -1,29 +1,15 @@
-import { Body, Controller, Get, NotFoundException, Param, Post } from '@nestjs/common';
+import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import { UserService } from '../services/user.service';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { User } from '@prisma/client';
 
-
-@Controller('user')
+@Controller('users')
 export class UserController {
-    constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
-    @Post()
-    async create(@Body() data: User) {
-        return this.userService.create(data);
-    }
-
-    @Get()
-    async findUser(@Body() data: User) {
-        return this.userService.findByEmail(data.email);
-    }
-
-    @Get(':id')
-    async findOne(@Param('id') id: string) {
-        const user = await this.userService.findOne(id);
-        if (!user) {
-            throw new NotFoundException('User not found.');
-        }
-        return user;
-    }
-
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getProfile(@Request() req): Promise<User> {
+    return this.userService.findByEmail(req.user.email);
+  }
 }
