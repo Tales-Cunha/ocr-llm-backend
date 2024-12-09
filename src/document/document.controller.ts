@@ -1,6 +1,6 @@
 import { Controller, Post, Get, Param, UploadedFile, UseInterceptors, Body, Request, UseGuards, Res, Delete   } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { DocumentService } from "../services/document.service";
+import { DocumentService } from "./document.service";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { Document, LLMInteraction } from "@prisma/client";
 import { Response } from 'express';

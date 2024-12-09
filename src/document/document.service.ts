@@ -19,7 +19,12 @@ export class DocumentService {
       if (!file || !file.buffer) {
         throw new BadRequestException('Falha no upload do arquivo.');
       }
-  
+    
+      const supportedMimeTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+      if (!supportedMimeTypes.includes(file.mimetype)) {
+        throw new BadRequestException('Formato de arquivo não suportado.');
+      }
+    
       const document = await this.prisma.document.create({
         data: {
           userId,
@@ -28,7 +33,7 @@ export class DocumentService {
           status: 'PENDING',
         },
       });
-  
+    
       await this.processOCR(document.id, file.buffer, file.mimetype);
       return document;
     }
@@ -40,15 +45,17 @@ export class DocumentService {
         if (mimeType === 'application/pdf') {
           const data = await pdfParse(fileBuffer);
           text = data.text;
-        } else {
-          const result = await Tesseract.recognize(fileBuffer, 'por');
+        } else if (mimeType.startsWith('image/')) {
+          const result = await Tesseract.recognize(fileBuffer, 'en');
           text = result.data.text;
+        } else {
+          throw new Error('Formato de arquivo não suportado.');
         }
-
+    
         if (!text) {
           throw new Error('Texto extraído está vazio.');
         }
-
+    
         await this.prisma.document.update({
           where: { id: documentId },
           data: {
@@ -56,7 +63,7 @@ export class DocumentService {
             status: 'COMPLETED',
           },
         });
-
+    
       } catch (error) {
         console.error(`Erro ao processar OCR para o documento ${documentId}:`, error);
         await this.prisma.document.update({
