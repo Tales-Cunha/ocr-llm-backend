@@ -20,22 +20,23 @@ model User {
 
 model Document {
   id              String           @id @default(uuid())
-  user            User             @relation(fields: [userId], references: [id])
   userId          String
   filename        String
-  originalUrl     String?
+  fileData        Bytes            // Adicionado para armazenar o conteúdo do arquivo
   ocrText         String?
-  status          String           @default("PENDING")
-  llmInteractions LLMInteraction[]
+  status          String
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+  llmInteractions LLMInteraction[]
+  user            User             @relation(fields: [userId], references: [id])
 }
 
 model LLMInteraction {
-  id          String     @id @default(uuid())
-  document    Document   @relation(fields: [documentId], references: [id])
+  id          String    @id @default(uuid())
   documentId  String
   question    String
   answer      String
-  createdAt   DateTime   @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  document    Document  @relation(fields: [documentId], references: [id])
 }
