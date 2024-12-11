@@ -37,11 +37,11 @@ export class AuthService {
       where: { email: credentials.email },
     });
     if (!user) {
-      throw new UnauthorizedException('Credenciais inválidas.');
+      throw new UnauthorizedException('User inválido.');
     }
     const passwordValid = await bcrypt.compare(credentials.password, user.password);
     if (!passwordValid) {
-      throw new UnauthorizedException('Credenciais inválidas.');
+      throw new UnauthorizedException('Senha inválida.');
     }
     const payload = { sub: user.id, email: user.email };
     const token = this.jwtService.sign(payload);
