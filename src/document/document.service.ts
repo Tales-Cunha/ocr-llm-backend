@@ -46,7 +46,7 @@ export class DocumentService {
           const data = await pdfParse(fileBuffer);
           text = data.text;
         } else if (mimeType.startsWith('image/')) {
-          const result = await Tesseract.recognize(fileBuffer, 'en');
+          const result = await Tesseract.recognize(fileBuffer, 'eng');
           text = result.data.text;
         } else {
           throw new Error('Formato de arquivo não suportado.');
@@ -73,15 +73,6 @@ export class DocumentService {
           },
         });
       }
-    }
-
-    private postProcessText(text: string): string {
-      // Tokenize the text into words
-      const tokenizer = new natural.WordTokenizer();
-      const words = tokenizer.tokenize(text);
-
-      // Join the words with spaces
-      return words.join(' ');
     }
 
     async getUserDocuments(userId: string): Promise<Document[]> {
