@@ -17,6 +17,8 @@ O objetivo deste backend é permitir que usuários façam upload de documentos (
 - **pdf-parse**
 - **GeminiService**
 
+## Acessar remotamente 
+* https://ocr-llm-backend.onrender.com
 ## Configuração e Execução Local
 
 ### Pré-requisitos
